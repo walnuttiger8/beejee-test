@@ -1,0 +1,8 @@
+.panel-heading_justify {
+    display: flex;
+    justify-content: space-between;
+}
+
+.panel-heading_justify span {
+    color: white;
+}

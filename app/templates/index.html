@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block styles %}
+{{super()}}
+  <link rel="stylesheet" href="{{url_for('static', filename='tasks/css/style.css')}}">
+{% endblock %}
+
+{% block app_content %}
+{% if form %}
+{{ wtf.quick_form(form) }}
+<br>
+{% endif %}
+<hr>
+<label for="sort-direction">sort by</label>
+
+<select name="sort-direction" id="sort-field">
+<option value="{{ SortField.ID }}" {% if sort_field == SortField.ID %}selected="selected"{% endif %}>
+    {{ SortField.description[SortField.ID] }}
+</option>
+<option value="{{ SortField.USERNAME }}" {% if sort_field == SortField.USERNAME %}selected="selected"{% endif %}>
+    {{ SortField.description[SortField.USERNAME] }}
+</option>
+<option value="{{ SortField.STATUS }}" {% if sort_field == SortField.STATUS %}selected="selected"{% endif %}
+    >{{ SortField.description[SortField.STATUS] }}
+</option>
+</select>
+
+    <label for="sort-direction">direction </label>
+<select name="sort-direction" id="sort-direction">
+    <option value="{{ SortDirection.ASC }}" {% if sort_direction == SortDirection.ASC %}selected="selected"{% endif %}>
+{{ SortDirection.description[SortDirection.ASC] }}</option>
+    <option value="{{ SortDirection.DESC }}" {% if sort_direction == SortDirection.DESC %}selected="selected"{% endif %} >
+{{ SortDirection.description[SortDirection.DESC] }}</option>
+</select>
+<button class="btn btn-primary" id="btn-sort">Apply</button>
+<hr>
+{% for task in tasks %}
+{% include 'tasks/_task.html' %}
+{% endfor %}
+
+<nav aria-label="...">
+    <ul class="pager">
+       <li class="previous{% if not prev_url %} disabled{% endif %}">
+           <a href="{{ prev_url or '#' }}">
+               <span aria-hidden="true">&larr;</span> 
+           </a>
+       </li>
+       <li class="next{% if not next_url %} disabled{% endif %}">
+           <a href="{{ next_url or '#' }}">
+               <span aria-hidden="true">&rarr;</span>
+           </a>
+       </li>
+    </ul>
+</nav>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='tasks/js/sort.js') }}"></script>
+<script>
+sort('{{ url_for("tasks.index") }}')
+</script>
+{% endblock %}
