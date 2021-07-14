@@ -1,5 +1,5 @@
 import requests
-from .exceptions import ApiException
+from .exceptions import ApiException, ApiAuthorizationException, TokenExpiredException
 from .response_status import ResponseStatus
 
 DEVELOPER = "Bulat"
@@ -92,7 +92,10 @@ class Api:
             "password": password,
         }
         url = Api._base_url + "/login"
-        content = Api._post(url, data)
+        try:
+            content = Api._post(url, data)
+        except ApiException:
+            raise ApiAuthorizationException("Ошибка авторизации")
         return content
 
     @staticmethod
@@ -112,5 +115,9 @@ class Api:
             "status": status,
         }
         url = Api._base_url + "/edit/" + str(task_id)
-        content = Api._post(url, data)
+        try:
+            content = Api._post(url, data)
+        except ApiException:
+            raise TokenExpiredException("Истек срок действия авторизационного токена")
+
         return content

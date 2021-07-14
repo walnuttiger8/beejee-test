@@ -3,6 +3,7 @@ from app.tasks.wrappers import require_api_token
 from app.api import Api, SortField, SortDirection, TaskStatus
 from app.tasks.services.task_service import TaskService
 from app.tasks.forms import LoginForm, TaskForm, EditTaskForm
+from app.api.exceptions import ApiAuthorizationException, TokenExpiredException
 
 from app.tasks import bp
 
@@ -14,8 +15,12 @@ def login():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-        data = api.login(username, password)
-        token = data.get("token")
+        try:
+            data = api.login(username, password)
+            token = data.get("token")
+        except ApiAuthorizationException:
+            flash("Incorrect auth data")
+            return redirect(url_for("tasks.login"))
         session["token"] = token
         return redirect(url_for("tasks.index"))
 
@@ -62,7 +67,11 @@ def edit(task_id: int):
     if form.validate_on_submit():
         text = form.text.data
         status = form.status.data
-        TaskService.edit_task(task_id, session["token"], text, status)
+        try:
+            TaskService.edit_task(task_id, session["token"], text, status)
+        except TokenExpiredException:
+            flash("Your token has been expired")
+            return redirect(url_for("tasks.logout"))
         flash("Your changes has been saved")
         return redirect(url_for("tasks.index"))
     elif request.method == "GET":
