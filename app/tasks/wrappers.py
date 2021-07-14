@@ -1,5 +1,6 @@
-from flask import session, Response, redirect, flash, url_for
+from flask import session, redirect, flash, url_for
 from functools import wraps
+
 
 def require_api_token(func):
     @wraps(func)
@@ -9,5 +10,5 @@ def require_api_token(func):
             return redirect(url_for("tasks.login"))
 
         return func(*args, **kwargs)
-    
+
     return check_token

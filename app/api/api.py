@@ -8,7 +8,8 @@ DEVELOPER = "Bulat"
 class Api:
     _base_url = "https://uxcandy.com/~shapoval/test-task-backend/v2"
 
-    def _get(self, url, params):
+    @staticmethod
+    def _get(url, params):
         """
         Базовая обертка GET-запроса
         :param url: адрес запроса
@@ -23,7 +24,8 @@ class Api:
 
         return content.get("message")
 
-    def _post(self, url, data):
+    @staticmethod
+    def _post(url, data):
         """
         Базовая обертка POST-запроса
         :param url: адрес запроса
@@ -38,7 +40,8 @@ class Api:
 
         return content.get("message")
 
-    def get_tasks(self, sort_field: str = None, sort_direction: str = None, page: str = None) -> dict:
+    @staticmethod
+    def get_tasks(sort_field: str = None, sort_direction: str = None, page: str = None) -> dict:
         """
         Получить список всех задач
         :param sort_field: поле, по которому выполняется сортировка
@@ -53,11 +56,11 @@ class Api:
             "page": page,
         }
         url = Api._base_url + "/"
-        content = self._get(url, params)
-        print(content)
+        content = Api._get(url, params)
         return content
 
-    def create_task(self, username: str, email: str, text: str):
+    @staticmethod
+    def create_task(username: str, email: str, text: str):
         """
         Добавление задачи
         :param username: текстовое поле - имя пользователя, который добавляет задачу
@@ -72,10 +75,11 @@ class Api:
             "text": text,
         }
         url = Api._base_url + "/create"
-        content = self._post(url, data)
+        content = Api._post(url, data)
         return content
 
-    def login(self, username, password) -> dict:
+    @staticmethod
+    def login(username, password) -> dict:
         """
         Логин. В случае успешной авторизации в теле сообщения будет передан авторизационный токен,
         срок жизни которого - 1 день (24 часа).
@@ -88,10 +92,11 @@ class Api:
             "password": password,
         }
         url = Api._base_url + "/login"
-        content = self._post(url, data)
+        content = Api._post(url, data)
         return content
 
-    def edit_task(self, task_id: int, token: str, text: str = None, status: str = None):
+    @staticmethod
+    def edit_task(task_id: int, token: str, text: str = None, status: str = None):
         """
         Редактирование задачи
         Редактирование доступно только для авторизованных пользователей
@@ -107,14 +112,5 @@ class Api:
             "status": status,
         }
         url = Api._base_url + "/edit/" + str(task_id)
-        content = self._post(url, data)
+        content = Api._post(url, data)
         return content
-
-
-if __name__ == '__main__':
-    api = Api()
-    print(api.get_tasks())  # 26302
-    print(api.login("admin", "123"))
-    token = "b1AvTjRMOWpQWDRQY21iQWVvUzdROW8xSmZ0d1dZcWVCQTFraWFlOTJGczU0dHNwM3Zndmw1ZnNoNGgvWlA0SDVacmZNYlFaVUN2NTh6RnJQcVBvblE9PQ=="
-    print(api.edit_task(26302, token, "Edited text"))
-    print(api.get_tasks())  # 26302
