@@ -10,6 +10,10 @@ from app.tasks import bp
 
 @bp.route("/login", methods=["GET", "POST"])
 def login():
+    """
+    Авторизация
+    :return:
+    """
     form = LoginForm()
     api = Api()
     if form.validate_on_submit():
@@ -36,6 +40,10 @@ def logout():
 @bp.route("/", methods=["GET", "POST"])
 @bp.route("/index", methods=["GET", "POST"])
 def index():
+    """
+    Все посты и добавление
+    :return:
+    """
     form = TaskForm()
     if form.validate_on_submit():
         username = form.username.data
@@ -63,6 +71,11 @@ def index():
 @bp.route("/edit/<task_id>", methods=["GET", "POST"])
 @require_api_token
 def edit(task_id: int):
+    """
+    Редактирование задачи
+    :param task_id:
+    :return:
+    """
     form = EditTaskForm()
     if form.validate_on_submit():
         text = form.text.data

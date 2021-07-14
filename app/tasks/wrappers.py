@@ -3,6 +3,12 @@ from functools import wraps
 
 
 def require_api_token(func):
+    """
+    Декоратор для проверки токена авторизации
+    :param func:
+    :return:
+    """
+
     @wraps(func)
     def check_token(*args, **kwargs):
         if not session.get("token"):
